@@ -1,19 +1,19 @@
-var express = require('express');
-var app = express();
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+let express = require('express');
+let app = express();
+let cookieParser = require('cookie-parser');
+let bodyParser = require('body-parser');
 
-var passport = require('passport');
-var session = require('express-session');
-var localStrategy = require('passport-local');
+let passport = require('passport');
+let session = require('express-session');
+let localStrategy = require('passport-local');
 
-var User = require('./models/user');
-var index = require('./routes/index');
-var register = require('./routes/register');
+let User = require('./models/user');
+let index = require('./routes/index');
+let register = require('./routes/register');
 
-var users = require('./routes/users');
+let users = require('./routes/users');
 
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
 app.use(session({
     secret: 'secret',
@@ -23,17 +23,17 @@ app.use(session({
     cookie: {maxAge: 60000, secure: false}
 }));
 
+//Mount Middleware
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({expanded: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
 //Mongo Setup
-var mongoURI = "mongodb://localhost:27017/prime_passport_lecture";
-var MongoDB = mongoose.connect(mongoURI).connection;
+let mongoURI = "mongodb://localhost:27017/passport";
+mongoose.connect(mongoURI);
+let MongoDB = mongoose.connection;
 
 MongoDB.on('error', function(err){
     console.log("Mongo Connection Error: ", err);
@@ -48,7 +48,7 @@ passport.serializeUser(function(user, done){
     done(null, user.id);
 });
 
-passport.deserializeUser(function(id, done){
+passport.deserializeUser((id, done) => {
     User.findById(id, function(err, user){
         if(err) done(err);
         done(null, user);
@@ -58,7 +58,7 @@ passport.deserializeUser(function(id, done){
 passport.use('local', new localStrategy({
     passReqToCallback: true,
     usernameField: 'username'
-}, function(req, username, password, done){
+}, (req, username, password, done) => {
     User.findOne({username: username}, function(err, user){
         if(err) throw err;
         if(!user){
@@ -76,14 +76,14 @@ passport.use('local', new localStrategy({
 }));
 
 
-
+//ROUTES
 app.use('/register', register);
 app.use('/user', users);
 app.use('/', index);
 
 app.set("port", (process.env.PORT || 5000));
 
-app.listen(app.get("port"), function(){
+app.listen(app.get("port"), () => {
     console.log("Listening on port: " + app.get("port"));
 });
 

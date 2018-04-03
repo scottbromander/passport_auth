@@ -11,7 +11,7 @@ router.post("/", passport.authenticate('local', {
 
 router.get('/create', function(req, res, next){
     console.log("Made it here");
-    res.sendFile(path.join(__dirname, "../public/assets/views/another.html"));
+    res.sendFile(path.join(__dirname, "../public/assets/views/index.html"));
 });
 
 router.get("/*", function(req, res, next){
